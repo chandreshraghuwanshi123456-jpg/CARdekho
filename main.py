@@ -11,6 +11,9 @@ model = joblib.load("model.pkl")
 
 # Input schema
 class PricePredict(BaseModel):
+from typing import Optional
+
+class PricePredict(BaseModel):
     year: int
     km_driven: int
     fuel: int
@@ -19,7 +22,7 @@ class PricePredict(BaseModel):
     owner: int
     engine: float
     max_power: float
-    seats: float
+    seats: Optional[float] = None
 
 # Health check / root
 @app.get("/")
@@ -45,3 +48,4 @@ def predict_price(data: PricePredict):
     return {
         "predicted_price": float(prediction)
     }
+
