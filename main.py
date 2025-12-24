@@ -32,8 +32,7 @@ def predict(data: PricePredict):
     data_dict = data.model_dump()
     
     # 2. REMOVE 'seats' (This reduces features from 9 to 8)
-    if 'seats' in data_dict:
-        del data_dict['seats']
+ 
     
     # 3. Convert to array
     input_df = pd.DataFrame([data_dict])
@@ -42,4 +41,5 @@ def predict(data: PricePredict):
     # 4. Make prediction
     prediction = model.predict(input_data_as_array)[0]
     
+
     return {"price": float(prediction)}
