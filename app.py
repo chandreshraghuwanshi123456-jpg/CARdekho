@@ -4,7 +4,7 @@ import requests
 # ⚠️ CHANGE THIS URL:
 # For local testing use: 'http://127.0.0.1:8000/predict'
 # For Render deployment use: 'https://cardekho-as2f.onrender.com/predict'
-API = 'https://cardekho-as2f.onrender.com/predict' 
+API = 'https://cardekho-as2f.onrender.com/predict'
 
 st.title("🚗 Car Price Prediction")
 
@@ -44,3 +44,4 @@ if st.button('Predict Now'):
             
     except Exception as e:
         st.error(f"Could not connect to Backend: {e}")
+
