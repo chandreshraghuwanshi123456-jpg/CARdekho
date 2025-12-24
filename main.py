@@ -1,16 +1,15 @@
 from fastapi import FastAPI
-import pickle
-import pandas as pd
 from pydantic import BaseModel
-from typing import Literal
-
-app = FastAPI()
-
-# 1. Load the model
+import pandas as pd
 import joblib
-model = joblib.load('model.pkl')
 
-# 2. Define the data structure (matches your Streamlit inputs)
+# Create FastAPI app
+app = FastAPI(title="Car Price Prediction API")
+
+# Load trained model
+model = joblib.load("model.pkl")
+
+# Input schema
 class PricePredict(BaseModel):
     year: int
     km_driven: int
@@ -22,24 +21,27 @@ class PricePredict(BaseModel):
     max_power: float
     seats: float
 
-@app.get('/')
-def greet():
-    return {"message": "Car Price API is running. Go to /docs to test."}
+# Health check / root
+@app.get("/")
+def root():
+    return {"status": "OK", "message": "Car Price API running. Visit /docs"}
 
-@app.post('/predict')
-def predict(data: PricePredict):
-    # 1. Convert input to dict
-    data_dict = data.model_dump()
-    
-    # 2. REMOVE 'seats' (This reduces features from 9 to 8)
- 
-    
-    # 3. Convert to array
-    input_df = pd.DataFrame([data_dict])
-    input_data_as_array = input_df.values
-    
-    # 4. Make prediction
-    prediction = model.predict(input_data_as_array)[0]
-    
+# Prediction endpoint
+@app.post("/predict")
+def predict_price(data: PricePredict):
 
-    return {"price": float(prediction)}
+    # Convert input to dict
+    input_data = data.model_dump()
+
+    # REMOVE seats (model trained on 8 features)
+    input_data.pop("seats")
+
+    # Convert to DataFrame
+    input_df = pd.DataFrame([input_data])
+
+    # Predict
+    prediction = model.predict(input_df)[0]
+
+    return {
+        "predicted_price": float(prediction)
+    }
