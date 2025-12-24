@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 
 # For local testing, use the localhost URL
-API = 'http://127.0.0.1:8000/predict' 
+API = 'https://cardekho-as2f.onrender.com/predict' 
 
 st.title("🚗 Car Price Prediction")
 
@@ -39,4 +39,5 @@ if st.button('Predict Now'):
         else:
             st.error(f"Error: {response.text}")
     except Exception as e:
+
         st.error(f"Could not connect to Backend: {e}")
