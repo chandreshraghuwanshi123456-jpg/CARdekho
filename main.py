@@ -3,16 +3,12 @@ from pydantic import BaseModel
 import pandas as pd
 import joblib
 
-# Create FastAPI app
 app = FastAPI(title="Car Price Prediction API")
 
-# Load trained model
+# Load model
 model = joblib.load("model.pkl")
 
-# Input schema
-
-from typing import Optional
-
+# Input schema (MATCHES TRAINING FEATURES)
 class PricePredict(BaseModel):
     year: int
     km_driven: int
@@ -21,32 +17,20 @@ class PricePredict(BaseModel):
     transmission: int
     owner: int
     engine: float
-    max_power: float
-    seats: Optional[float] = None
+    seats: float   # REQUIRED
+    # ❌ max_power REMOVED
 
-# Health check / root
 @app.get("/")
 def root():
-    return {"status": "OK", "message": "Car Price API running. Visit /docs"}
+    return {"status": "OK", "message": "API is running. Visit /docs"}
 
-# Prediction endpoint
 @app.post("/predict")
 def predict_price(data: PricePredict):
 
-    # Convert input to dict
-    input_data = data.model_dump()
-
-    # REMOVE seats (model trained on 8 features)
-    input_data.pop("seats")
-
     # Convert to DataFrame
-    input_df = pd.DataFrame([input_data])
+    input_df = pd.DataFrame([data.model_dump()])
 
     # Predict
     prediction = model.predict(input_df)[0]
 
-    return {
-        "predicted_price": float(prediction)
-    }
-
-
+    return {"predicted_price": float(prediction)}
