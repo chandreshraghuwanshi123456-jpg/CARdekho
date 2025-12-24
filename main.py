@@ -10,7 +10,7 @@ app = FastAPI(title="Car Price Prediction API")
 model = joblib.load("model.pkl")
 
 # Input schema
-class PricePredict(BaseModel):
+
 from typing import Optional
 
 class PricePredict(BaseModel):
@@ -48,4 +48,5 @@ def predict_price(data: PricePredict):
     return {
         "predicted_price": float(prediction)
     }
+
 
