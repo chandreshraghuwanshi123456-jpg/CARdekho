@@ -6,9 +6,10 @@ import joblib
 app = FastAPI(title="Car Price Prediction API")
 
 # Load model
+# Ensure scikit-learn version matches your local environment if possible
 model = joblib.load("model.pkl")
 
-# Input schema (MATCHES TRAINING FEATURES)
+# Input schema - MUST MATCH ['year', 'km_driven', 'fuel', 'seller_type', 'transmission', 'owner', 'engine', 'seats']
 class PricePredict(BaseModel):
     year: int
     km_driven: int
@@ -17,8 +18,7 @@ class PricePredict(BaseModel):
     transmission: int
     owner: int
     engine: float
-    seats: float   # REQUIRED
-    # ❌ max_power REMOVED
+    seats: float 
 
 @app.get("/")
 def root():
@@ -26,11 +26,13 @@ def root():
 
 @app.post("/predict")
 def predict_price(data: PricePredict):
-
-    # Convert to DataFrame
-    input_df = pd.DataFrame([data.model_dump()])
-
+    # Convert Pydantic object to Dictionary
+    data_dict = data.model_dump()
+    
+    # Create DataFrame (Columns will match because keys match)
+    input_df = pd.DataFrame([data_dict])
+    
     # Predict
     prediction = model.predict(input_df)[0]
-
+    
     return {"predicted_price": float(prediction)}
